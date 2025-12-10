@@ -15,18 +15,18 @@ export default function AdminPage() {
 
   const [resultado, setResultado] = useState('');
 
-  // Função inteligente que corrige R$ 1.000,00 para 1000.00
-  const formatarPreco = (valor) => {
+  // A CORREÇÃO ESTÁ AQUI: Adicionei ": any" para o sistema aceitar qualquer coisa
+  const formatarPreco = (valor: any) => {
     if (!valor) return 0;
-    // Remove "R$", remove pontos de milhar, troca vírgula por ponto
-    const numeroLimpo = valor.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+    // Converte para texto caso venha como número, para evitar erros
+    const textoValor = String(valor);
+    const numeroLimpo = textoValor.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
     return numeroLimpo;
   };
 
   const gerarCodigo = () => {
     const idUnico = Date.now(); 
     
-    // Aqui aplicamos a correção automática
     const precoAntigoFormatado = formatarPreco(form.precoAntigo);
     const precoAtualFormatado = formatarPreco(form.precoAtual);
 
@@ -52,7 +52,7 @@ export default function AdminPage() {
         <h1 className="text-3xl font-black mb-6 text-[#111827]">
           Gestão <span className="text-[#FFC107]">Bombando Hoje</span> 🔥
         </h1>
-        <p className="mb-4 text-gray-600">Pode digitar o preço normal (ex: 1.500,90) que eu corrijo para o código.</p>
+        <p className="mb-4 text-gray-600">Agora o sistema aceita qualquer formato de preço sem travar.</p>
         
         <div className="space-y-4">
           
@@ -121,14 +121,14 @@ export default function AdminPage() {
             onClick={gerarCodigo}
             className="w-full bg-[#FFC107] hover:bg-yellow-400 text-black font-black py-4 rounded-lg uppercase shadow mt-4 transition"
           >
-            Gerar Código Corrigido
+            Gerar Código Seguro
           </button>
 
         </div>
 
         {resultado && (
           <div className="mt-8 bg-gray-900 p-4 rounded-lg text-green-400 font-mono text-sm overflow-x-auto">
-            <p className="text-white font-sans font-bold mb-2">Copie e cole no final do arquivo <span className="text-yellow-400">data/produtos.js</span> (dentro dos colchetes):</p>
+            <p className="text-white font-sans font-bold mb-2">Copie e cole no final do arquivo data/produtos.js:</p>
             <pre>{resultado}</pre>
           </div>
         )}
@@ -137,4 +137,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
