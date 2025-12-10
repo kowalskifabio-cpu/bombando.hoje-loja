@@ -20,5 +20,15 @@ export const produtos = [
     linkAfiliado: "https://mercadolivre.com/sec/2Jps72i",
     categoria: "Periféricos",
     destaque: true
+  },{
+    id: 1765395159794,
+    nome: "Fone De Ouvido Headphone Bluetooth Tune 520bt Branco Jbl",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_705870-MLA96151128483_102025-F.webp",
+    precoAntigo: 339.00,
+    precoAtual: 217.60,
+    parcelamento: "10x sem juros",
+    linkAfiliado: "",
+    categoria: "Áudio",
+    destaque: true
   },
 ];
