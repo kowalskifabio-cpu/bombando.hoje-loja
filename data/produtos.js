@@ -14,7 +14,7 @@ export const produtos = [
     id: 1765394494055,
     nome: "Mouse Gamer X11 Attack Shark Tri Mode 22000dpi Paw3311 Dock Cor Preto",
     img: "https://http2.mlstatic.com/D_NQ_NP_2X_606816-MLA99489775010_112025-F.webp",
-    precoAntigo: 200.00,
+    precoAntigo: 201.00,
     precoAtual: 190.00,
     parcelamento: "6x sem juros",
     linkAfiliado: "https://mercadolivre.com/sec/2Jps72i",
