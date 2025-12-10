@@ -27,7 +27,7 @@ export const produtos = [
     precoAntigo: 338.90,
     precoAtual: 217.60,
     parcelamento: "10x sem juros",
-    linkAfiliado: "",
+    linkAfiliado: "https://mercadolivre.com/sec/2TjStwA",
     categoria: "Áudio",
     destaque: true
   },
