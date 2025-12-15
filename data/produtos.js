@@ -1,6 +1,16 @@
 export const produtos = [
   
   {
+    id: 1765820394274,
+    nome: "Notebook Lenovo Ideapad 1i Intel Core i5 - 1235U, 8GB RAM, 512GB SSD, Windows 11 Home, Tela 15,6'' HD - 82VY000QBR",
+    img: "https://http2.mlstatic.com/D_NQ_NP_2X_615718-MLU73058616092_112023-F.webp",
+    precoAntigo: 4500.00,
+    precoAtual: 2999.90,
+    parcelamento: "10x sem juros",
+    linkAfiliado: "https://mercadolivre.com/sec/1tXVZct",
+    categoria: "Computadores",
+    destaque: true
+  },{
     id: 1765387389765,
     nome: "Samsung Galaxy S24 Plus (eSIM) 5G Dual SIM 256 GB creme 12 GB RAM",
     img: "https://http2.mlstatic.com/D_NQ_NP_2X_832160-MLA99437063692_112025-F.webp",
