@@ -1,79 +1,60 @@
 const fs = require('fs');
 const path = require('path');
 
-// Função simples para simular o "fetch" no Node.js antigo se necessário, 
-// mas usaremos a fetch nativa do Node 18+ (padrão hoje em dia)
+// Função para buscar preço real na API do Mercado Livre
 async function buscarPrecoReal(linkAfiliado) {
   try {
-    // 1. Descobrir o ID do produto (MLB...) seguindo o redirecionamento
+    // 1. Segue o link de afiliado para descobrir o código MLB
     const response = await fetch(linkAfiliado, { redirect: 'follow' });
     const urlFinal = response.url;
     
-    // Procura por MLB-1234 ou MLB1234 na URL
+    // Procura por MLB... na URL
     const match = urlFinal.match(/MLB-?(\d+)/);
-    
-    if (!match) {
-      console.log(`❌ Não achei código MLB no link: ${linkAfiliado}`);
-      return null;
-    }
+    if (!match) return null;
     
     const idProduto = `MLB${match[1]}`;
     
-    // 2. Perguntar ao Mercado Livre o preço oficial (API Pública)
+    // 2. Consulta a API oficial
     const apiResponse = await fetch(`https://api.mercadolibre.com/items/${idProduto}`);
     const dados = await apiResponse.json();
     
-    if (dados.price) {
-      return dados.price;
-    }
-    return null;
-
-  } catch (erro) {
-    console.error(`Erro ao processar ${linkAfiliado}:`, erro.message);
+    return dados.price; // Retorna o preço numérico (ex: 3899)
+  } catch (error) {
+    console.error(`Erro no link: ${linkAfiliado}`);
     return null;
   }
 }
 
 async function atualizarLoja() {
-  const caminhoArquivo = path.join(__dirname, '../data/produtos.js');
-  let conteudo = fs.readFileSync(caminhoArquivo, 'utf8');
+  const caminhoArquivo = path.join(__dirname, '../data/produtos.json');
+  
+  // 1. Ler o arquivo JSON atual
+  const arquivoRaw = fs.readFileSync(caminhoArquivo, 'utf8');
+  const produtos = JSON.parse(arquivoRaw);
+  
+  console.log("🕵️ Robô iniciado: Buscando preços atualizados...");
+  let mudouAlgo = false;
 
-  // Encontra todos os links de afiliado no arquivo
-  // Regex procura por: linkAfiliado: "..."
-  const regexLink = /linkAfiliado:\s*"([^"]+)"/g;
-  let match;
-  
-  console.log("🕵️ Iniciando varredura de preços...");
-
-  // Precisamos processar um por um
-  // Nota: Fazer isso com Regex em arquivo JS é uma "gambiarra técnica" para manter seu projeto simples.
-  // O ideal no futuro é usar um banco de dados JSON.
-  
-  // Vamos ler o arquivo linha a linha ou bloco a bloco seria complexo.
-  // Estratégia simplificada: Vamos extrair todos os links, buscar preços e substituir no texto.
-  
-  // Como o arquivo é texto, vamos fazer uma substituição inteligente
-  // Vamos assumir que o preço está logo antes ou depois do link no objeto, 
-  // mas substituir texto via regex é perigoso.
-  
-  // NOVA ESTRATÉGIA MAIS SEGURA PARA SEU NÍVEL:
-  // Vamos apenas avisar quais preços mudaram no console por enquanto, 
-  // pois alterar o arquivo 'produtos.js' via script pode quebrar a formatação se não for perfeito.
-  
-  console.log("⚠️ MODO SEGURO: Apenas listando os novos preços para você alterar.");
-  
-  while ((match = regexLink.exec(conteudo)) !== null) {
-    const link = match[1];
-    console.log(`\n🔍 Verificando: ${link}`);
-    
-    const novoPreco = await buscarPrecoReal(link);
-    
-    if (novoPreco) {
-      console.log(`   💰 Preço Atual no ML: R$ ${novoPreco}`);
-      // Aqui poderíamos salvar, mas requer cuidado com a vírgula e formatação do seu arquivo.
-    } else {
-      console.log("   ⚠️ Não consegui ler o preço deste item.");
+  // 2. Varrer cada produto
+  for (const produto of produtos) {
+    if (produto.linkAfiliado) {
+      const novoPreco = await buscarPrecoReal(produto.linkAfiliado);
+      
+      // Se achou preço e ele é diferente do atual
+      if (novoPreco && novoPreco !== produto.precoAtual) {
+        console.log(`✅ Atualizando ${produto.nome}: De R$${produto.precoAtual} para R$${novoPreco}`);
+        produto.precoAtual = novoPreco;
+        mudouAlgo = true;
+      }
     }
+  }
+
+  // 3. Salvar no arquivo se houve mudança
+  if (mudouAlgo) {
+    fs.writeFileSync(caminhoArquivo, JSON.stringify(produtos, null, 2));
+    console.log("💾 Arquivo produtos.json atualizado com sucesso!");
+  } else {
+    console.log("👍 Tudo atualizado. Nenhuma mudança de preço detectada.");
   }
 }
 

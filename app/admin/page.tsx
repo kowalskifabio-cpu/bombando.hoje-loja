@@ -32,15 +32,15 @@ export default function AdminPage() {
 
     const codigoPronto = `
   {
-    id: ${idUnico},
-    nome: "${form.nome}",
-    img: "${form.img}",
-    precoAntigo: ${precoAntigoFormatado},
-    precoAtual: ${precoAtualFormatado},
-    parcelamento: "${form.parcelamento}",
-    linkAfiliado: "${form.linkAfiliado}",
-    categoria: "${form.categoria}",
-    destaque: true
+    "id": ${idUnico},
+    "nome": "${form.nome}",
+    "img": "${form.img}",
+    "precoAntigo": ${precoAntigoFormatado},
+    "precoAtual": ${precoAtualFormatado},
+    "parcelamento": "${form.parcelamento}",
+    "linkAfiliado": "${form.linkAfiliado}",
+    "categoria": "${form.categoria}",
+    "destaque": true
   },`;
     
     setResultado(codigoPronto);
