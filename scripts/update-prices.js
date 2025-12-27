@@ -1,31 +1,53 @@
 const fs = require('fs');
 const path = require('path');
 
-// Função: Vai na API usando o ID, mas com "crachá" de navegador
-async function buscarPrecoPeloID(idProduto) {
-  try {
-    // 1. Limpeza do ID
-    const idLimpo = idProduto.replace('-', '').trim();
+// Função Faxineira: Pega qualquer link sujo e devolve só o ID MLB
+function extrairIdLimpo(linkOuId) {
+    // Procura por MLB seguido de números (ex: MLB37044038)
+    // Ignora hifens e aceita letras minúsculas
+    const match = linkOuId.match(/(MLB|mlb)-?(\d+)/);
+    
+    if (match) {
+        // Retorna formatado padrão: MLB123456
+        return `MLB${match[2]}`;
+    }
+    return null;
+}
 
-    // 2. O DISFARCE (Essencial para não dar erro 403)
+async function buscarPrecoModoBatch(idProduto) {
+  try {
+    // TRUQUE DO MESTRE: Usar a API de "Multi-Get" (ids=...) 
+    // Muitas vezes ela não tem o mesmo bloqueio da API individual.
+    const url = `https://api.mercadolibre.com/items?ids=${idProduto}`;
+
+    // Disfarce leve
     const headers = {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      "Accept": "application/json"
+        "User-Agent": "MercadoLibre/10.350.0 Android/13 (Pixel 7)", // Fingindo ser o App de Celular
+        "Authorization": "" // Garante que não tem credencial velha atrapalhando
     };
 
-    // 3. Chamada à API com os cabeçalhos
-    const response = await fetch(`https://api.mercadolibre.com/items/${idLimpo}`, { headers });
+    const response = await fetch(url, { headers });
     
     if (!response.ok) {
-        // Se der erro, mostra qual foi
-        console.error(`   ❌ Erro ML (ID: ${idLimpo}): Código ${response.status}`);
+        console.error(`   ❌ API recusou (Status ${response.status})`);
         return null;
     }
 
     const dados = await response.json();
-    return dados.price; // Retorna o preço
+    
+    // A resposta dessa API vem em uma lista: [ { "body": { ... } } ]
+    if (dados && dados[0] && dados[0].body) {
+        if (dados[0].code === 403 || dados[0].code === 404) {
+             console.error(`   ❌ O Mercado Livre bloqueou especificamente este ID.`);
+             return null;
+        }
+        return dados[0].body.price;
+    }
+    
+    return null;
+
   } catch (error) {
-    console.error(`   ❌ Falha de conexão: ${error.message}`);
+    console.error(`   ❌ Erro de conexão: ${error.message}`);
     return null;
   }
 }
@@ -37,41 +59,44 @@ async function atualizarLoja() {
     const arquivoRaw = fs.readFileSync(caminhoArquivo, 'utf8');
     const produtos = JSON.parse(arquivoRaw);
     
-    console.log("🚀 Robô V5 iniciado: ID Direto + Disfarce...");
+    console.log("🚀 Robô V7: Faxina de Link + Técnica 'Multi-Get'...");
     console.log("---------------------------------------------------");
     let mudouAlgo = false;
 
     for (const produto of produtos) {
-      if (produto.id) {
-        const novoPreco = await buscarPrecoPeloID(produto.id);
+      // Tenta pegar o ID do campo 'id' ou extrair do 'linkAfiliado'
+      const idBruto = produto.id || produto.linkAfiliado;
+      const idLimpo = extrairIdLimpo(idBruto);
+
+      if (idLimpo) {
+        const novoPreco = await buscarPrecoModoBatch(idLimpo);
         
         if (novoPreco) {
           if (novoPreco !== produto.precoAtual) {
-            console.log(`✅ ATUALIZADO: ${produto.nome}`);
-            console.log(`   💰 De R$ ${produto.precoAtual} para R$ ${novoPreco}`);
+            console.log(`✅ ${produto.nome}`);
+            console.log(`   💰 ATUALIZADO: R$ ${produto.precoAtual} -> R$ ${novoPreco}`);
             produto.precoAtual = novoPreco;
             mudouAlgo = true;
           } else {
-             console.log(`👍 ${produto.nome} (Preço igual: R$ ${produto.precoAtual})`);
+             console.log(`👍 ${produto.nome} (Segue R$ ${produto.precoAtual})`);
           }
         } else {
-            // Se falhou (deu null), avisa que manteve o antigo por erro
-            console.log(`⚠️  Erro ao ler "${produto.nome}" - Mantido preço antigo.`);
+            console.log(`⚠️  Falha ao ler "${produto.nome}" (Provável bloqueio de IP)`);
         }
       } else {
-          console.log(`⚠️  Pulei "${produto.nome}" (Sem ID cadastrado).`);
+          console.log(`⚠️  Não achei código MLB válido em "${produto.nome}"`);
       }
       
-      // Pausa de segurança de 1 segundo entre consultas
+      // Pausa essencial
       await new Promise(r => setTimeout(r, 1000));
     }
 
     console.log("---------------------------------------------------");
     if (mudouAlgo) {
       fs.writeFileSync(caminhoArquivo, JSON.stringify(produtos, null, 2));
-      console.log("💾 Tabela de preços salva com sucesso!");
+      console.log("💾 Arquivo salvo com sucesso!");
     } else {
-      console.log("✅ Tudo verificado. Nenhuma alteração necessária.");
+      console.log("✅ Tudo verificado.");
     }
     
   } catch (erro) {

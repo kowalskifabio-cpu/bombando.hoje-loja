@@ -54,7 +54,11 @@ export default function Home() {
             <div key={produto.id} className="bg-white rounded-xl shadow-xl overflow-hidden hover:scale-105 transition duration-300 flex flex-col">
               
               {/* Imagem do Produto */}
-              <div className="h-48 bg-white flex items-center justify-center p-4 border-b border-gray-100">
+              <div className="h-48 bg-white flex items-center justify-center p-4 border-b border-gray-100 relative">
+                 {/* Selo de Confiança */}
+                 <div className="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded-full">
+                    Melhor Preço
+                 </div>
                 <img src={produto.img} alt={produto.nome} className="max-h-full max-w-full object-contain" />
               </div>
 
@@ -70,23 +74,29 @@ export default function Home() {
                   {produto.nome}
                 </h3>
                 
-                <div className="mt-auto">
-                  <span className="text-gray-400 line-through text-sm">R$ {produto.precoAntigo}</span>
-                  <div className="flex items-end gap-1">
-                    <span className="text-xs font-bold text-green-600 mb-1">R$</span>
-                    <span className="text-3xl font-black text-gray-900">{produto.precoAtual}</span>
+                {/* --- MUDANÇA: VITRINE CEGA (SEM PREÇO FIXO) --- */}
+                <div className="mt-auto bg-gray-50 rounded-lg p-3 border border-gray-100 text-center">
+                  <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Oferta Relâmpago</p>
+                  
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">🔒</span>
+                    <span className="text-xl font-black text-gray-800">Ver Preço Atual</span>
                   </div>
-                  <p className="text-xs text-green-600 font-semibold mt-1">{produto.parcelamento}</p>
+                  
+                  <p className="text-xs text-green-600 font-semibold">
+                    Disponível no Mercado Livre
+                  </p>
                 </div>
+                {/* ----------------------------------------------- */}
 
                 {/* BOTÃO DE AÇÃO */}
                 <a 
                   href={produto.linkAfiliado} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="block w-full text-center mt-4 bg-[#FFC107] hover:bg-yellow-400 text-gray-900 font-black py-3 rounded-lg uppercase shadow-md transition"
+                  className="block w-full text-center mt-4 bg-[#FFC107] hover:bg-yellow-400 text-gray-900 font-black py-3 rounded-lg uppercase shadow-md transition group"
                 >
-                  Ver Oferta 🔥
+                  Conferir no ML <span className="inline-block transition-transform group-hover:translate-x-1">👉</span>
                 </a>
               </div>
             </div>
@@ -94,10 +104,13 @@ export default function Home() {
         </div>
       </main>
 
-      {/* RODAPÉ */}
+      {/* RODAPÉ COM AVISO LEGAL */}
       <footer className="bg-gray-900 text-gray-500 text-center p-8 mt-12 border-t border-gray-800">
-        <p>© 2025 Bombando Hoje. Curadoria de ofertas.</p>
+        <p className="mb-2">© 2025 Bombando Hoje. Curadoria de ofertas.</p>
+        <p className="text-xs text-gray-600 max-w-2xl mx-auto">
+          * Aviso: Somos um agregador de ofertas. Os preços e a disponibilidade estão sujeitos a alteração sem aviso prévio por parte dos vendedores no Mercado Livre. O valor final é sempre o exibido na página de pagamento da loja parceira.
+        </p>
       </footer>
     </div>
   );
-} 
+}
