@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 // Agora ele vai procurar na pasta 'data' que pedimos para renomear
-import { produtos } from '../data/produtos'; 
+import produtos from '../data/produtos.json';
 
 export default function Home() {
   const [busca, setBusca] = useState('');
