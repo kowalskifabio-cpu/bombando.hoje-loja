@@ -5,7 +5,7 @@ export const produtos = [
     nome: "Notebook Asus Vivobook 15 X1504va Intel Core I5 1334u 8gb Ram 512gb Ssd Intel Iris Xe Windows 11 Home Tela 15,6 Fhd Silver - Nj1740w",
     img: "https://http2.mlstatic.com/D_NQ_NP_2X_674676-MLA83523568962_042025-F.webp",
     precoAntigo: 4000.00,
-    precoAtual: 2785.20,
+    precoAtual: 2919.60,
     parcelamento: "10x sem juros",
     linkAfiliado: "https://mercadolivre.com/sec/2t4niy2",
     categoria: "Computadores",
