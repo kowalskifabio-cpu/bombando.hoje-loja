@@ -15,7 +15,7 @@ export const produtos = [
     nome: "Notebook Acer Vero AV15-53P-56HM Intel® Core™ i5 – 1335U 15.6” Full HD Intel® Iris® Xe 512 GB SSD 8 GB RAM Windows 11 Home",
     img: "https://http2.mlstatic.com/D_NQ_NP_2X_894231-MLU78002335839_072024-F.webp",
     precoAntigo: 4440.28,
-    precoAtual: 2999.90,
+    precoAtual: 3215.50,
     parcelamento: "10x sem juros",
     linkAfiliado: "https://mercadolivre.com/sec/2fsYnuj",
     categoria: "Computadores",
